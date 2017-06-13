@@ -42,9 +42,11 @@ stream.Close()
 // You can close connection by
 obConn.Close()
 ```
-How to run demos:
+## How to run demos:
+```golang
 <1> player:
 go build rtmp_player.go
 ./rtmp_player -URL rtmp://10.1.51.20:1935/myapp/ -Stream cv -DumpFLV ./demo.flv
 <2> publisher:
 ./rtmp_publisher -URL "rtmp://10.1.51.20:1935/myapp/" -Stream cv -FLV "/md/videos/aWalkToUnionSquare.flv"
+```
