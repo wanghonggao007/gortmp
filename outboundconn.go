@@ -8,10 +8,11 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"github.com/zhangpeihao/goamf"
-	"github.com/zhangpeihao/log"
 	"net"
 	"time"
+
+	"github.com/zhangpeihao/goamf"
+	"github.com/zhangpeihao/log"
 )
 
 const (
@@ -76,7 +77,9 @@ func Dial(url string, handler OutboundConnHandler, maxChannelNumber int) (Outbou
 	var c net.Conn
 	switch rtmpURL.protocol {
 	case "rtmp":
+		fmt.Println("========================rtmp:", url, rtmpURL.host, rtmpURL.port)
 		c, err = net.Dial("tcp", fmt.Sprintf("%s:%d", rtmpURL.host, rtmpURL.port))
+		fmt.Println("========================rtmp2:", c.RemoteAddr(), c.LocalAddr(), err)
 	case "rtmps":
 		c, err = tls.Dial("tcp", fmt.Sprintf("%s:%d", rtmpURL.host, rtmpURL.port), &tls.Config{InsecureSkipVerify: true})
 	default:
@@ -92,12 +95,13 @@ func Dial(url string, handler OutboundConnHandler, maxChannelNumber int) (Outbou
 	}
 	br := bufio.NewReader(c)
 	bw := bufio.NewWriter(c)
-	timeout := time.Duration(10*time.Second)
+	timeout := time.Duration(10 * time.Second)
 	err = Handshake(c, br, bw, timeout)
 	//err = HandshakeSample(c, br, bw, timeout)
 	if err == nil {
+		fmt.Println("========================rtmp5:", ok)
 		logger.ModulePrintln(logHandler, log.LOG_LEVEL_DEBUG, "Handshake OK")
-
+		fmt.Println("========================rtmp6:", ok)
 		obConn := &outboundConn{
 			url:          url,
 			rtmpURL:      rtmpURL,
@@ -106,8 +110,12 @@ func Dial(url string, handler OutboundConnHandler, maxChannelNumber int) (Outbou
 			transactions: make(map[uint32]string),
 			streams:      make(map[uint32]OutboundStream),
 		}
+		fmt.Println("========================rtmp7:", obConn.handler)
+		//obConn.handler.OnStatus(obConn)
 		obConn.handler.OnStatus(obConn)
+		fmt.Println("========================rtmp8:", ok)
 		obConn.conn = NewConn(c, br, bw, obConn, maxChannelNumber)
+		fmt.Println("========================rtmp9:", ok)
 		return obConn, nil
 	}
 
